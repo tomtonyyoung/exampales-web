@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 定义一个容器 -->
+    <div class="animation-container">
+        <!-- 定义太阳系区域 -->
+        <div class="solar-system-area">
+            <!-- 定义星球1轨道 -->
+            <div class="planet1-orbital-path orbital-path">
+                <!-- 定义星球1 -->
+                <div class="planet-1 planet-object"></div>
+                <!-- 定义星球2轨道 -->
+                <div class="planet2-orbital-path orbital-path">
+                    <!-- 定义星球2 -->
+                    <div class="planet-2 planet-object"></div>
+                    <!-- 定义星球3轨道 -->
+                    <div class="planet3-orbital-path orbital-path">
+                        <!-- 定义星球3 -->
+                        <div class="planet-3 planet-object"></div>
+                        <!-- 定义中心 -->
+                        <div class="center-star"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<style>
+    /* 定义旋转动画，从0度旋转到359度 */
+    @keyframes rotation {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(359deg);
+        }
+    }
+
+    /* 动画容器样式，设置宽度、高度、显示方式、对齐方式和背景颜色 */
+    .animation-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid beige;
+        background-color:#1d2630;
+    }
+
+    /* 太阳系区域样式，设置宽度、高度、显示方式和对齐方式 */
+    .solar-system-area {
+        width: 250px;
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 轨道通用样式，设置定位、显示方式、对齐方式、边框和圆角 */
+    .orbital-path {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #fafbfC;
+        border-radius: 50%;
+    }
+
+    /* 星球1轨道样式，设置宽度、高度和旋转动画 */
+    .planet1-orbital-path {
+        width: 165px;
+        height: 165px;
+        animation: rotation 12s linear 0s infinite;
+    }
+
+    /* 星球2轨道样式，设置宽度、高度和旋转动画 */
+    .planet2-orbital-path {
+        width: 120px;
+        height: 120px;
+        animation: rotation 7.4s linear 0s infinite;
+    }
+
+    /* 星球3轨道样式，设置宽度、高度和旋转动画 */
+    .planet3-orbital-path {
+        width: 90px;
+        height: 90px;
+        animation: rotation 3s linear 0s infinite;
+    }
+
+    /* 行星通用样式，设置定位、大小、圆角和背景颜色 */
+    .planet-object {
+        position: absolute;
+        top: -5px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #3ff9dc;
+    }
+
+    /* 中心天体样式，设置大小、圆角和背景颜色 */
+    .center-star {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #ffab91;
+    }
+</style>
+</html>    

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 设置字符编码为 UTF-8 -->
+    <meta charset="UTF-8">
+    <!-- 设置视口，使页面在不同设备上能正确显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 设置页面标题 -->
+    <title>Document</title>
+</head>
+<!-- 引入 Three.js 库 -->
+<script src="./three.min.js"></script>
+<body>
+    <!-- 定义一个用于显示 Three.js 渲染结果的容器 -->
+    <div id="canvas"></div>
+</body>
+<script >
+    // 声明全局变量，用于存储渲染器、场景、相机、合成器、圆形物体、骨架物体和粒子物体
+    let renderer, scene, camera, composer, circle, skelet, particle;
+
+    // 当窗口加载完成时，调用 init 函数进行初始化，然后调用 animate 函数开始动画循环
+    window.onload = function() {
+        init();
+        animate();
+    };
+
+    // 初始化函数，用于设置渲染器、场景、相机和创建物体
+    function init() {
+        // 创建一个 WebGL 渲染器，开启抗锯齿和透明背景
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // 设置渲染器的像素比，根据设备像素比进行调整
+        renderer.setPixelRatio((window.devicePixelRatio) ? window.devicePixelRatio : 1);
+        // 设置渲染器的大小为窗口的宽度和高度
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // 禁用自动清除渲染器
+        renderer.autoClear = false;
+        // 设置渲染器的清除颜色为透明
+        renderer.setClearColor(0x000000, 0.0);
+        // 将渲染器的 DOM 元素添加到页面中 id 为 canvas 的容器中
+        document.getElementById('canvas').appendChild(renderer.domElement);
+
+        // 创建一个新的场景
+        scene = new THREE.Scene();
+
+        // 创建一个透视相机，设置视角、宽高比、近裁剪面和远裁剪面
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+        // 设置相机的位置
+        camera.position.z = 400;
+        // 将相机添加到场景中
+        scene.add(camera);
+
+        // 创建圆形物体、骨架物体和粒子物体
+        circle = new THREE.Object3D();
+        skelet = new THREE.Object3D();
+        particle = new THREE.Object3D();
+
+        // 将圆形物体、骨架物体和粒子物体添加到场景中
+        scene.add(circle);
+        scene.add(skelet);
+        scene.add(particle);
+
+        // 创建一个四面体几何体
+        const geometry = new THREE.TetrahedronGeometry(2, 0);
+        // 创建一个二十面体几何体
+        const geom = new THREE.IcosahedronGeometry(7, 1);
+        // 创建另一个更大的二十面体几何体
+        const geom2 = new THREE.IcosahedronGeometry(15, 1);
+
+        // 创建一个 Phong 材质，用于渲染四面体
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            shading: THREE.FlatShading
+        });
+
+        // 循环创建 1000 个四面体网格，并添加到粒子物体中
+        for (let i = 0; i < 10000; i++) {
+            const mesh = new THREE.Mesh(geometry, material);
+            // 设置四面体的位置
+            mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+            mesh.position.multiplyScalar(90 + (Math.random() * 700));
+            // 设置四面体的旋转
+            mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
+            // 将四面体添加到粒子物体中
+            particle.add(mesh);
+        }
+
+        // 创建另一个 Phong 材质，用于渲染二十面体
+        const mat = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            shading: THREE.FlatShading
+        });
+
+        // 创建一个线框材质，用于渲染另一个二十面体
+        const mat2 = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            wireframe: true,
+            side: THREE.DoubleSide
+        });
+
+        // 创建一个二十面体网格，并添加到圆形物体中
+        const planet = new THREE.Mesh(geom, mat);
+        // 设置二十面体的缩放比例
+        planet.scale.x = planet.scale.y = planet.scale.z = 16;
+        // 将二十面体添加到圆形物体中
+        circle.add(planet);
+
+        // 创建另一个更大的二十面体网格，并添加到骨架物体中
+        const planet2 = new THREE.Mesh(geom2, mat2);
+        // 设置更大的二十面体的缩放比例
+        planet2.scale.x = planet2.scale.y = planet2.scale.z = 10;
+        // 将更大的二十面体添加到骨架物体中
+        skelet.add(planet2);
+
+        // 创建一个环境光，并添加到场景中
+        const ambientLight = new THREE.AmbientLight(0x999999);
+        scene.add(ambientLight);
+
+        // 创建三个方向光
+        const lights = [];
+        lights[0] = new THREE.DirectionalLight(0xffffff, 1);
+        lights[0].position.set(1, 0, 0);
+        lights[1] = new THREE.DirectionalLight(0x11E8BB, 1);
+        lights[1].position.set(0.75, 1, 0.5);
+        lights[2] = new THREE.DirectionalLight(0x8200C9, 1);
+        lights[2].position.set(-0.75, -1, 0.5);
+
+        // 将三个方向光添加到场景中
+        scene.add(lights[0]);
+        scene.add(lights[1]);
+        scene.add(lights[2]);
+
+        // 监听窗口大小变化事件，调用 onWindowResize 函数进行处理
+        window.addEventListener('resize', onWindowResize, false);
+    };
+
+    // 窗口大小变化时的处理函数，用于更新相机的宽高比和渲染器的大小
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // 动画循环函数，使用 requestAnimationFrame 实现平滑动画
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // 更新粒子物体的旋转
+        particle.rotation.x += 0.0000;
+        particle.rotation.y -= 0.0040;
+        // 更新圆形物体的旋转
+        circle.rotation.x -= 0.0020;
+        circle.rotation.y -= 0.0030;
+        // 更新骨架物体的旋转
+        skelet.rotation.x -= 0.0010;
+        skelet.rotation.y += 0.0020;
+        // 清除渲染器
+        renderer.clear();
+        // 渲染场景和相机
+        renderer.render(scene, camera);
+    };
+</script>
+<style>
+    html {
+        /* 设置 HTML 元素的宽度和高度为 100% */
+        width: 100%;
+        height: 100%;
+        /* 设置渐变背景 */
+        background: #11e8bb; /* Old browsers */
+        background: -moz-linear-gradient(top,  #11e8bb 0%, #8200c9 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top,  #11e8bb 0%,#8200c9 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom,  #11e8bb 0%,#8200c9 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#11e8bb', endColorstr='#8200c9',GradientType=0 ); /* IE6-9 */
+        /* 隐藏溢出内容 */
+        overflow: hidden;
+    }
+
+    body {
+        /* 去除 body 元素的默认外边距和内边距 */
+        margin: 0;
+        padding: 0;
+    }
+</style>
+</html>    
